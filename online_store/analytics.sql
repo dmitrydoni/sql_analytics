@@ -129,8 +129,7 @@ FROM (
 		) AS product_rank
 	FROM 
 		product_category pc 
-		LEFT JOIN product_payments pp ON pc.product_id = pp.product_id
+		LEFT JOIN product_payments pp USING (product_id)
 ) product_ranks
 WHERE product_rank BETWEEN 1 AND 3 
 ORDER BY category_name;
-
