@@ -1,3 +1,21 @@
+/* Best student by subject */
+SELECT 
+	subject_id,
+	student_id
+FROM (
+	SELECT 
+		student_id,
+		subject_id,
+		grade,
+		MAX(grade) OVER (
+	   		PARTITION BY subject_id
+		) AS max_grade
+	FROM 
+		grades
+	) max_grades
+WHERE 
+	grade = max_grade;
+
 /* Product and category info by app, active subscriptions only */
 WITH
 	active_subscriptions AS (
@@ -31,7 +49,7 @@ SELECT
 	subscriptions_count
 FROM
 	product_category pc
-	JOIN active_subscriptions acts ON pc.product_id = acts.product_id;
+	JOIN active_subscriptions acts USING (product_id);
 
 /* Users and payments for canceled subscriptions, by plan */
 WITH
@@ -76,7 +94,7 @@ WITH
 			amount
 		FROM 
 			app a 
-		LEFT JOIN payments p ON a.product_id = p.product_id
+		LEFT JOIN payments p USING (product_id)
 	)
 	
 SELECT
@@ -109,7 +127,7 @@ WITH
 			SUM(amount) AS payments_total
 		FROM 
 			app a 
-			LEFT JOIN payments p ON a.product_id = p.product_id
+			LEFT JOIN payments p USING (product_id)
 		GROUP BY a.product_id, product_name
 	)
 
